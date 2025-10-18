@@ -1,7 +1,7 @@
 export default function SomosAurora() {
   return (
     <section className="bg-[#111827] text-white py-16 px-6 md:px-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto" id="somos-aurora">
         <h2 className="text-4xl md:text-5xl font-semibold text-center mb-12">
           Somos Aurora
         </h2>

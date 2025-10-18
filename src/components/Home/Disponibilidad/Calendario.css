@@ -1,0 +1,12 @@
+.react-calendar__navigation__label {
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
+
+.react-calendar__navigation__arrow {
+  color: #111827 !important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #e11d48 !important; /* un rojo Tailwind elegante */
+}

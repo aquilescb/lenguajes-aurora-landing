@@ -6,9 +6,17 @@
   --cta-blue: #3B82F6;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Poly", serif;
   background: var(--nav-dark);
+}
+
+#somos-aurora, #disponibilidad {
+  scroll-margin-top: 40vh;
 }
 
 /*swiper*/
@@ -42,4 +50,14 @@ body {
 .swiper-button-next:after,
 .swiper-button-prev:after {
   font-size: 30px !important;
+}
+
+.perspective {
+  perspective: 1000px;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+.backface-hidden {
+  backface-visibility: hidden;
 }

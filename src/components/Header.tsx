@@ -82,7 +82,7 @@ export default function Header() {
                 Hotel
               </a>
               <a
-                href="#"
+                href="#somos-aurora"
                 className={`transition-colors ${
                   isScrolled
                     ? 'text-gray-800 hover:text-[var(--cta-blue)]'
@@ -92,7 +92,7 @@ export default function Header() {
                 Somos Aurora
               </a>
               <a
-                href="#"
+                href="#disponibilidad"
                 className={`transition-colors ${
                   isScrolled
                     ? 'text-gray-800 hover:text-[var(--cta-blue)]'

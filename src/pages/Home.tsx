@@ -4,7 +4,7 @@ import Disponibilidad from "../components/Home/Disponibilidad/Disponibilidad";
 
 export default function Home() {
   return (
-    <div className="text-center py-20">
+    <div className="text-center pt-20">
       <Hero />
       <SomosAurora />
       <Disponibilidad />
