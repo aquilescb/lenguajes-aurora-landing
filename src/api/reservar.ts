@@ -4,6 +4,7 @@ export type ReservaData = {
   apellido: string;
   email: string;
   telefono: string;
+  ubicacion?: string; // Nueva ubicación: "Ciudad, Provincia, País"
   // datos de reserva
   tipo_habitacion_id: number;
   fecha_inicio: string;

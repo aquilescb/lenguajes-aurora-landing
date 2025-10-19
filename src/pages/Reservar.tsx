@@ -1,10 +1,24 @@
 import { useState } from "react";
 import SelectorHabReserva from "../components/Reservar/SelectorHabReserva";
 import { crearReserva, type ReservaData } from "../api/reservar";
+import { obtenerUbicacionCompleta } from "../api/ubicacion";
+import Modal from "../components/Modal";
 
 export default function Reservar() {
   const [cardFlip, setCardFlip] = useState(false);
   const [tipoHabitacionId, setTipoHabitacionId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error';
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   const [cardData, setCardData] = useState({
     nombre: "",
     apellido: "",
@@ -23,65 +37,110 @@ export default function Reservar() {
     setCardData({ ...cardData, [e.target.name]: e.target.value });
   };
 
+  const closeModal = () => {
+    setModal({ ...modal, isOpen: false });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log("tipoHabitacionId:", tipoHabitacionId); // Debug
+    
     // Validar que se haya seleccionado un tipo de habitación
     if (!tipoHabitacionId) {
-      alert("Por favor selecciona un tipo de habitación");
+      setModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Faltan datos',
+        message: 'Por favor selecciona un tipo de habitación antes de continuar.'
+      });
       return;
     }
 
-    const reservaData: ReservaData = {
-      // datos de persona
-      nombre: cardData.nombre,
-      apellido: cardData.apellido,
-      email: cardData.email,
-      telefono: cardData.telefono,
-      // datos de reserva
-      tipo_habitacion_id: tipoHabitacionId,
-      fecha_inicio: cardData.fecha_inicio,
-      fecha_fin: cardData.fecha_fin,
-      observaciones: cardData.observaciones,
-      // datos de pago
-      cardName: cardData.cardName,
-      cardNumber: cardData.cardNumber,
-      cvc: cardData.cvc,
-      expiry: cardData.expiry
-    };
+    setIsSubmitting(true);
 
-    const result = await crearReserva(reservaData);
-
-    if (result.success && result.data) {
-      // Reserva creada exitosamente
-      alert(`¡Reserva creada exitosamente! 
+    try {
+      // Obtener ubicación del usuario
+      const ubicacionData = await obtenerUbicacionCompleta();
+      console.log('Ubicación obtenida:', ubicacionData);
       
-Detalles:
-• Reserva ID: ${result.data.reservaId}
-• Habitación: ${result.data.habitacion.nombre} (${result.data.habitacion.tipo})
-• Fechas: ${result.data.fechas.inicio} al ${result.data.fechas.fin}
-• Estado: ${result.data.estado}
+      // Usar la ubicación obtenida o un valor por defecto
+      const ubicacionString = ubicacionData.success && ubicacionData.ubicacion
+        ? ubicacionData.ubicacion
+        : 'Ubicación no disponible';
 
-${result.message}`);
-      
-      // Limpiar formulario después de éxito
-      setCardData({
-        nombre: "",
-        apellido: "",
-        email: "",
-        telefono: "",
-        fecha_inicio: "",
-        fecha_fin: "",
-        observaciones: "",
-        cardNumber: "",
-        cardName: "",
-        expiry: "",
-        cvc: ""
+      const reservaData: ReservaData = {
+        // datos de persona
+        nombre: cardData.nombre,
+        apellido: cardData.apellido,
+        email: cardData.email,
+        telefono: cardData.telefono,
+        // datos de reserva
+        tipo_habitacion_id: tipoHabitacionId,
+        fecha_inicio: cardData.fecha_inicio,
+        fecha_fin: cardData.fecha_fin,
+        observaciones: cardData.observaciones,
+        // datos de pago
+        cardName: cardData.cardName,
+        cardNumber: cardData.cardNumber,
+        cvc: cardData.cvc,
+        expiry: cardData.expiry,
+        // ubicación para estadísticas
+        ubicacion: ubicacionString
+      };
+
+      const result = await crearReserva(reservaData);
+
+      if (result.success && result.data) {
+        // Reserva creada exitosamente
+        setModal({
+          isOpen: true,
+          type: 'success',
+          title: '¡Reserva Confirmada!',
+          message: `Detalles de tu reserva:
+          
+                  • Número de Reserva: ${result.data.reservaId}
+                  • Habitación: ${result.data.habitacion.nombre} (${result.data.habitacion.tipo})
+                  • Fechas: ${result.data.fechas.inicio} al ${result.data.fechas.fin}
+                  • Estado: ${result.data.estado}
+
+                  ${result.message}`
+        });
+        
+        // Limpiar formulario después de éxito
+        setCardData({
+          nombre: "",
+          apellido: "",
+          email: "",
+          telefono: "",
+          fecha_inicio: "",
+          fecha_fin: "",
+          observaciones: "",
+          cardNumber: "",
+          cardName: "",
+          expiry: "",
+          cvc: ""
+        });
+        setTipoHabitacionId(null);
+      } else {
+        // Error del backend o de conexión
+        setModal({
+          isOpen: true,
+          type: 'error',
+          title: 'Error en la Reserva',
+          message: result.message
+        });
+      }
+    } catch (error) {
+      console.error('Error en el proceso de reserva:', error);
+      setModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Error en la Reserva',
+        message: 'Ocurrió un error inesperado. Por favor intenta nuevamente.'
       });
-      setTipoHabitacionId(null);
-    } else {
-      // Error del backend o de conexión
-      alert(`Error al crear la reserva: ${result.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -141,7 +200,13 @@ ${result.message}`);
                   Tipo de Habitación *
                 </label>
                 <div className="w-full">
-                  <SelectorHabReserva onChange={setTipoHabitacionId} />
+                  <SelectorHabReserva 
+                    value={tipoHabitacionId}
+                    onChange={(id) => {
+                      console.log("Reservar - recibiendo onChange:", id); // Debug
+                      setTipoHabitacionId(id);
+                    }} 
+                  />
                 </div>
               </div>
               <input
@@ -276,9 +341,14 @@ ${result.message}`);
 
             <button
               type="submit"
-              className="w-full bg-(--nav-dark) text-white font-semibold py-3 rounded-lg mt-6 hover:bg-[#374151] transition-all cursor-pointer"
+              disabled={isSubmitting}
+              className={`w-full font-semibold py-3 rounded-lg mt-6 transition-all ${
+                isSubmitting 
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-(--nav-dark) text-white hover:bg-[#374151] cursor-pointer'
+              }`}
             >
-              Confirmar Reserva
+              {isSubmitting ? 'Procesando reserva...' : 'Confirmar Reserva'}
             </button>
           </form>
 
@@ -292,6 +362,15 @@ ${result.message}`);
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <Modal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+      />
     </div>
   );
 }

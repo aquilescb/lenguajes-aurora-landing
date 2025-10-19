@@ -3,9 +3,10 @@ import { getTiposHabitacion, type TipoHabitacion } from "../../api/habitaciones"
 
 type Props = {
   onChange?: (id: number | null) => void;
+  value?: number | null;
 };
 
-export default function SelectorHabReserva({ onChange }: Props) {
+export default function SelectorHabReserva({ onChange, value }: Props) {
   const [tipos, setTipos] = useState<TipoHabitacion[]>([]);
   const [selected, setSelected] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -19,10 +20,18 @@ export default function SelectorHabReserva({ onChange }: Props) {
     fetchTipos();
   }, []);
 
+  // Sincronizar con el value prop
+  useEffect(() => {
+    setSelected(value ? String(value) : "");
+  }, [value]);
+
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
+    console.log("Selector - value seleccionado:", value); // Debug
     setSelected(value);
-    onChange?.(value ? parseInt(value) : null);
+    const parsedValue = value ? parseInt(value) : null;
+    console.log("Selector - enviando onChange:", parsedValue); // Debug
+    onChange?.(parsedValue);
   };
 
   return (
