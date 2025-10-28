@@ -1,12 +1,139 @@
+/* === Base react-calendar === */
+.aurora-cal.react-calendar {
+   border: none;
+   padding: 16px 16px 20px;
+   font-family: inherit;
+}
+
+/* Navegación */
 .react-calendar__navigation__label {
-  color: #111827 !important;
-  font-weight: 600 !important;
+   color: #111827 !important;
+   font-weight: 700 !important; /* subimos de 600 a 700 */
+   background: transparent !important;
 }
-
 .react-calendar__navigation__arrow {
-  color: #111827 !important;
+   color: #111827 !important;
+}
+.aurora-cal .react-calendar__navigation {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   margin-bottom: 10px;
+}
+.aurora-cal .react-calendar__navigation button {
+   border-radius: 12px;
+   background: #f8fafc;
+   border: 1px solid #e2e8f0;
+   padding: 10px 12px;
+   color: #0f1b2b;
+   font-weight: 600;
+   transition: background 0.2s, transform 0.15s;
+}
+.aurora-cal .react-calendar__navigation button:hover {
+   background: #eef2f7;
+   transform: translateY(-1px);
 }
 
+/* Encabezados de semana */
+.aurora-cal .react-calendar__month-view__weekdays {
+   text-transform: uppercase;
+   font-size: 12px;
+   letter-spacing: 0.08em;
+   color: #334155;
+}
+.aurora-cal .react-calendar__month-view__weekdays__weekday {
+   padding: 6px 0;
+}
+
+/* Tiles (días) */
+.aurora-cal .tile,
+.aurora-cal .react-calendar__tile {
+   padding: 14px 0;
+   border-radius: 14px;
+   color: #111827;
+   transition: all 0.2s ease-in-out;
+}
+.aurora-cal .react-calendar__tile:hover:not(:disabled),
+.aurora-cal .tile:is(:hover, :focus) {
+   background: #f7fafc;
+   transform: scale(1.04);
+   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+}
+
+/* Seleccionado (activo) */
+.aurora-cal .react-calendar__tile--active {
+   background: #e2f2ff !important;
+   animation: pulseSel 1.2s ease-in-out infinite;
+}
+@keyframes pulseSel {
+   0%,
+   100% {
+      box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.25);
+   }
+   50% {
+      box-shadow: 0 0 0 6px rgba(14, 165, 233, 0);
+   }
+}
+
+/* Estados personalizados */
 .react-calendar__month-view__days__day--weekend {
-  color: #e11d48 !important; /* un rojo Tailwind elegante */
+   color: #e11d48 !important; /* rojo Tailwind elegante para finde */
+}
+.aurora-cal .is-ocupado {
+   background: #bae6fd;
+   border: 1px solid #7dd3fc;
+   color: #0b2137;
+}
+.aurora-cal .is-hoy {
+   background: #ffffff;
+   border: 2px solid #0f1b2b;
+}
+.aurora-cal .react-calendar__tile:disabled {
+   opacity: 0.85;
+   cursor: not-allowed;
+}
+.aurora-cal .react-calendar__tile:focus-visible {
+   outline: 2px solid #0ea5e9;
+   outline-offset: 2px;
+}
+
+/* ===== Tamaños responsivos (más grande) ===== */
+@media (min-width: 768px) {
+   .aurora-cal.react-calendar {
+      padding: 18px 18px 22px;
+   }
+   .aurora-cal .react-calendar__navigation__label {
+      font-size: 1.15rem;
+   }
+   .aurora-cal .react-calendar__navigation button {
+      padding: 12px 14px;
+   }
+   .aurora-cal .react-calendar__month-view__weekdays {
+      font-size: 13px;
+   }
+   .aurora-cal .tile,
+   .aurora-cal .react-calendar__tile {
+      padding: 16px 0;
+      font-size: 1rem;
+      border-radius: 16px;
+   }
+}
+@media (min-width: 1024px) {
+   .aurora-cal.react-calendar {
+      padding: 22px;
+   }
+   .aurora-cal .react-calendar__navigation__label {
+      font-size: 1.25rem;
+   }
+   .aurora-cal .react-calendar__navigation button {
+      padding: 14px 16px;
+   }
+   .aurora-cal .react-calendar__month-view__weekdays {
+      font-size: 14px;
+   }
+   .aurora-cal .tile,
+   .aurora-cal .react-calendar__tile {
+      padding: 18px 0;
+      font-size: 1.05rem;
+   }
 }
